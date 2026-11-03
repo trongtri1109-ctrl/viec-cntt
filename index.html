@@ -643,6 +643,44 @@ dialog.wiz.big{width:min(760px,95vw)}
 .heads .av+.av{margin-left:-6px}
 .band .lead .heads .av{border:2px solid rgba(255,255,255,.7)}
 @media (max-width:1100px){.item.item2{grid-template-columns:36px minmax(0,1fr) auto;row-gap:6px}.item2 .ico{width:36px;height:36px}.item2 .ip,.item2 .ncw,.item2 .stack{display:none}}
+/* ===== MOBILE: iPhone (SE → Pro Max) & Samsung Galaxy (Fold → Ultra) ===== */
+@media (max-width:900px){
+html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.app,.app.wide{grid-template-columns:minmax(0,1fr)!important;height:auto;min-height:100vh;min-height:100dvh;padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+.left,.mid,.right{min-width:0;max-width:100%}
+.goals2,.deps{grid-template-columns:minmax(0,1fr)}
+.kstrip{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sh{flex-wrap:wrap;row-gap:4px}.sh h2{flex:1 1 100%}
+.nav{scrollbar-width:none;-webkit-overflow-scrolling:touch}.nav::-webkit-scrollbar{display:none}
+img,svg,video,canvas{max-width:100%}
+}
+@media (max-width:480px){
+.logo{padding:0 14px 10px;margin-bottom:10px}.logo img{max-width:120px}
+.me{padding:0 14px 10px;gap:12px}.me .av{width:44px;height:44px;font-size:15px}
+.nav{padding:0 8px;gap:2px}
+.nav button{flex:1 0 auto;justify-content:center;gap:6px;padding:10px;font-size:14px}
+.nav svg{display:none}
+.left .foot{padding:12px 14px 0}
+.mid,.right{padding:16px 14px}
+.mhead h1{font-size:20px}
+.kstrip{gap:8px}
+.wk7{grid-template-columns:repeat(4,minmax(0,1fr))}
+.form .two,.facts{grid-template-columns:minmax(0,1fr)}
+.hero,.band,.ckp{padding:16px}
+.ckp{grid-template-columns:minmax(0,1fr)}
+dialog.wiz{width:calc(100vw - 16px);max-width:calc(100vw - 16px);max-height:calc(100dvh - 16px);margin:auto}
+input,select,textarea{font-size:16px!important}
+}
+@media (max-width:360px){
+.mid,.right{padding:14px 10px}
+.nav button{padding:9px 8px;font-size:13px}
+.kt b,.kt strong{font-size:26px}
+}
+@media (max-width:600px){
+.g-row:not(.gg) .g-name{padding-left:32px}
+.g-row:not(.gg) .g-name::before,.g-row:not(.gg) .g-name::after{left:22px}
+.g-row:not(.gg) .g-name::after{width:6px}
+}
 </style>
 </head>
 <body>
@@ -820,7 +858,7 @@ function vRight(){
 }
 /* ---------- Gantt ---------- */
 function vTimeline(){
-  const zoom=S.zoom, px=zoom==='week'?30:zoom==='month'?9:3.4, LW=340;
+  const zoom=S.zoom, px=zoom==='week'?30:zoom==='month'?9:3.4, LW=innerWidth<600?200:340;
   const ts=DB.tasks.filter(t=>S.tArea.has(t.area));
   const t0=zoom==='quarter'?'2026-04-01':'2026-07-01', t1=zoom==='week'?'2027-01-31':'2027-02-28';
   const days=Math.round((Date.parse(t1)-Date.parse(t0))/864e5), W=days*px, X=d=>Math.max(0,(Date.parse(d)-Date.parse(t0))/864e5*px);
@@ -1291,8 +1329,8 @@ document.addEventListener('click',e=>{
   if(ciHandle(e,()=>{render();}))return;
   const b=e.target.closest('[data-view],[data-sel],[data-back],[data-karea],[data-tarea],[data-zoom],[data-tog],#toToday,#xlsx');if(!b)return;
   if(b.dataset.view){S.view=b.dataset.view;S.sel=null;S.person=null;if(S.view==='timeline')firstTL=true;return render();}
-  if(b.dataset.sel){if(S.view==='timeline'){S.view='inbox';}S.sel=b.dataset.sel;return render();}
-  if(b.hasAttribute('data-back')){S.sel=null;return render();}
+  if(b.dataset.sel){if(S.view==='timeline'){S.view='inbox';}S.sel=b.dataset.sel;render();mobJump('right');return;}
+  if(b.hasAttribute('data-back')){S.sel=null;render();mobJump('mid');return;}
   if(b.dataset.karea){S.kArea=b.dataset.karea;return render();}
   if(b.dataset.tarea){const a=b.dataset.tarea;S.tArea.has(a)?S.tArea.delete(a):S.tArea.add(a);if(!S.tArea.size)S.tArea.add(a);return render();}
   if(b.dataset.zoom){S.zoom=b.dataset.zoom;firstTL=true;return render();}
@@ -1306,6 +1344,7 @@ document.addEventListener('submit',e=>{if(e.target.id!=='nf')return;e.preventDef
   DB.tasks.push({id,code:nextCode(f.get('area')),area:f.get('area'),title:f.get('title').trim(),owners:[f.get('o')],start:f.get('start')||TODAY,due:f.get('due'),end:null,pct:0,budget:null,note:'',hist:[null,null,null,null,null,null,null,0],checked:false,subs:[]});
   S.sel=id;toast('Đã tạo nhiệm vụ');render();});
 render();
+function mobJump(id){if(innerWidth>900)return;const el=document.getElementById(id);el&&requestAnimationFrame(()=>el.scrollIntoView({behavior:'smooth',block:'start'}));}
 </script>
 </body>
 </html>
